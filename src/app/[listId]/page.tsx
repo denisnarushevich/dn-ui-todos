@@ -5,7 +5,7 @@ import {TodoItem} from '../TodoItem'
 import {AddTodoForm} from '../AddTodoForm'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
-import {ListChecksIcon, LockIcon, UnlockIcon} from 'lucide-react'
+import {ListChecksIcon, LockIcon, UnlockIcon, UserIcon} from 'lucide-react'
 import {useCurrentUser} from "@/app/CurrentUserProvider";
 import {NameFormContent} from "@/app/NameForm";
 
@@ -16,7 +16,14 @@ import {useParams, useRouter} from "next/navigation";
 
 import {v4 as uuidv4} from 'uuid';
 import {Spinner} from "@/app/Spinner";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel, DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import {useAsyncFn} from "react-use";
 
 export default function TodoApp() {
     const router = useRouter()
@@ -44,6 +51,10 @@ export default function TodoApp() {
         setShowNameForm(false);
     }, [loginByName]);
 
+    const [{loading: saving}, update] = useAsyncFn(async (list: TodoList) => {
+        mutateList(list, {revalidate: false});
+        return updateTodoList(list);
+    })
 
     if (!todoList) {
         if (error) {
@@ -51,11 +62,6 @@ export default function TodoApp() {
         } else {
             return <Spinner className="w-10 h-10"/>;
         }
-    }
-
-    function update(list: TodoList) {
-        mutateList(list, {revalidate: false});
-        return updateTodoList(list);
     }
 
     const addTodo = (text: string, parentId: string | null = null, author: string) => {
@@ -151,55 +157,62 @@ export default function TodoApp() {
                         <DropdownMenu>
                             <DropdownMenuTrigger>
                                 <Button size="icon">
-                                    <ListChecksIcon
-                                        className="w-6 h-6 flex-shrink-0"/>
+                                    {saving ? <Spinner className="w-6 h-6 flex-shrink-0"/> : <ListChecksIcon
+                                        className="w-6 h-6 flex-shrink-0"/>}
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                                <DropdownMenuItem onClick={createNew}>Create New</DropdownMenuItem>
+                                <DropdownMenuLabel>
+                                    <div className="flex items-center gap-2"><UserIcon className="w-5 h-5"/>{user?.name}
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator/>
+                                <DropdownMenuItem onClick={createNew}>New List</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        <Input
+                        {user && todoList.createdBy === user.id ? <Input
                             value={todoList.name}
                             onChange={(e) => updateListName(e.target.value)}
                             className="text-lg font-bold bg-transparent border-none"
                             disabled={todoList.isFrozen}
-                        />
+                        /> : <div className="px-2.5 text-lg font-bold bg-transparent border-none">{todoList.name}</div>}
                     </div>
                     {user && todoList.createdBy === user.id && <Button onClick={toggleFreeze} variant="outline">
                         {todoList.isFrozen ? <UnlockIcon className="mr-2"/> : <LockIcon className="mr-2"/>}
-                        {todoList.isFrozen ? 'Freeze' : 'Unfreeze'}
+                        {todoList.isFrozen ? 'Unreeze' : 'Freeze'}
                     </Button>}
                     {!user && <Button onClick={handleEditClick} variant="outline">
                         Edit
                     </Button>}
                 </div>
 
-                <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
-                    <div className="flex justify-between items-center mb-4">
+                <div className="container mx-auto px-4">
+                    <div className="mt-10 p-6 bg-white rounded-lg shadow-xl">
+                        <div className="flex justify-between items-center mb-4">
 
 
+                        </div>
+                        <AddTodoForm onAdd={(text) => addTodo(text, null, 'Current User')}
+                                     disabled={todoList.isFrozen}/>
+
+                        <ul
+                            className="mt-4 space-y-4"
+                        >
+                            {todoList?.todos.map((todo, index) => (
+                                <TodoItem
+                                    key={todo.id}
+                                    todo={todo}
+                                    onToggle={toggleTodo}
+                                    onDelete={deleteTodo}
+                                    onAddTask={(text, parentId) => addTodo(text, parentId, 'Current User')}
+                                    level={0}
+                                    index={index}
+                                    isFrozen={todoList?.isFrozen ?? true}
+                                />
+                            ))}
+                        </ul>
                     </div>
-                    <AddTodoForm onAdd={(text) => addTodo(text, null, 'Current User')}
-                                 disabled={todoList.isFrozen}/>
-
-                    <ul
-                        className="mt-4 space-y-4"
-                    >
-                        {todoList?.todos.map((todo, index) => (
-                            <TodoItem
-                                key={todo.id}
-                                todo={todo}
-                                onToggle={toggleTodo}
-                                onDelete={deleteTodo}
-                                onAddTask={(text, parentId) => addTodo(text, parentId, 'Current User')}
-                                level={0}
-                                index={index}
-                                isFrozen={todoList?.isFrozen ?? true}
-                            />
-                        ))}
-                    </ul>
                 </div>
             </div>
             <Dialog open={showNameForm} onOpenChange={setShowNameForm}>
