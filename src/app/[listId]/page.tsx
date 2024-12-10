@@ -5,7 +5,7 @@ import {TodoItem} from '../TodoItem'
 import {AddTodoForm} from '../AddTodoForm'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
-import {ListChecksIcon, LockIcon, UnlockIcon, UserIcon} from 'lucide-react'
+import {ListChecksIcon, LockIcon, PlusIcon, UnlockIcon, UserIcon} from 'lucide-react'
 import {useCurrentUser} from "@/app/CurrentUserProvider";
 import {NameFormContent} from "@/app/NameForm";
 
@@ -163,11 +163,19 @@ export default function TodoApp() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                                 <DropdownMenuLabel>
-                                    <div className="flex items-center gap-2"><UserIcon className="w-5 h-5"/>{user?.name}
+                                    <div className="flex items-center gap-2">
+                                        <UserIcon className="w-5 h-5"/>
+                                        {user?.name}
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator/>
-                                <DropdownMenuItem onClick={createNew}>New List</DropdownMenuItem>
+
+                                <DropdownMenuItem onClick={createNew}>
+                                    <div className="flex items-center gap-2">
+                                        <PlusIcon className="w-5 h-5"/>
+                                        New List
+                                    </div>
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
 
