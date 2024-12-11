@@ -78,7 +78,7 @@ export function useApi() {
         deleteTodo(todoList: TodoList, id: string) {
             const deleteFromTasks = (tasks: Todo[]): Todo[] =>
                 tasks.filter(task => task.id !== id)
-                    .map(task => ({...task, tasks: deleteFromTasks(task.todos)}))
+                    .map(task => ({...task, todos: deleteFromTasks(task.todos)}))
 
             return updateTodoList({
                 ...todoList,
