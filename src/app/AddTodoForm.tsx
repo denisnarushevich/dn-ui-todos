@@ -31,7 +31,7 @@ export function AddTodoForm({onAdd, disabled = false}: AddTodoFormProps) {
                 className="flex-grow"
                 disabled={disabled}
             />
-            <Button type="submit" size="icon" disabled={disabled}>
+            <Button type="submit" size="icon" disabled={disabled} className=" flex-shrink-0">
                 <Plus className="h-4 w-4"/>
             </Button>
         </form>

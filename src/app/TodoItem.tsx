@@ -7,6 +7,7 @@ import {ChevronUp, Trash2} from 'lucide-react'
 import {AddTodoForm} from './AddTodoForm'
 import {Todo, User} from "@/app/api/mockBackend";
 import {useProfile} from "@/app/api/useProfile";
+import {Contributor} from "@/lib/react/components/Contributor";
 
 interface TodoItemProps {
     todo: Todo
@@ -50,7 +51,7 @@ export function TodoItem({
         <div
             className={`${getBgColor(level ?? 0)} p-4 rounded-lg mb-2`}
         >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-4">
                 <Checkbox
                     checked={todo.completed}
                     onCheckedChange={() => onToggle(todo)}
@@ -63,6 +64,9 @@ export function TodoItem({
                 >
                     {todo.text}
                 </label>
+                <div className="flex flex-shrink-0 gap-2">
+                    {todo.contributors.map((userId) => <Contributor key={userId} userId={userId}/>)}
+                </div>
                 {totalSubtasks > 0 && (
                     <span
                         className={`text-sm font-bold ${allSubtasksCompleted ? 'text-green-500' : completedSubtasks ? 'text-orange-500' : 'text-gray-500'}`}>

@@ -80,6 +80,51 @@ const mockDb: DB = {
             isFrozen: false,
             createdBy: '1',
         },
+        {
+            id: '2',
+            name: 'Groceries',
+            todos: [
+                {
+                    id: '3',
+                    text: 'Buy eggs',
+                    completed: false,
+                    todos: [],
+                    createdBy: '1',
+                    updatedBy: '1',
+                    contributors: ['1']
+                },
+                {
+                    id: '4',
+                    text: 'Buy milk',
+                    completed: false,
+                    todos: [
+                        {
+                            id: '5',
+                            text: 'Go to market',
+                            completed: true,
+                            todos: [],
+                            createdBy: '1',
+                            updatedBy: '2',
+                            contributors: ['1','2']
+                        },
+                        {
+                            id: '6',
+                            text: 'Find local vendors',
+                            completed: true,
+                            todos: [],
+                            createdBy: '1',
+                            updatedBy: '1',
+                            contributors: ['1']
+                        },
+                    ],
+                    createdBy: '1',
+                    updatedBy: '1',
+                    contributors: ['1', '2']
+                },
+            ],
+            isFrozen: false,
+            createdBy: '1',
+        },
     ],
 };
 

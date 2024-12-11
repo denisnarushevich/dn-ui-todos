@@ -26,6 +26,7 @@ import {
 import {useAsyncFn} from "react-use";
 import {useApi} from "@/app/api/useApi";
 import {useTodoList} from "@/app/api/useTodoList";
+import {TodoLists} from "@/lib/react/components/TodoLists";
 
 export default function TodoApp() {
     const {push: navigate} = useRouter()
@@ -54,7 +55,7 @@ export default function TodoApp() {
         if (error) {
             return error
         } else {
-            return <Spinner className="w-10 h-10"/>;
+            return <div className="min-h-full flex items-center justify-center"><Spinner className="w-10 h-10"/></div>;
         }
     }
 
@@ -110,13 +111,25 @@ export default function TodoApp() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                                <DropdownMenuLabel>
+                                {user ? <DropdownMenuLabel>
                                     <div className="flex items-center gap-2">
                                         <UserIcon className="w-5 h-5"/>
                                         {user?.name}
                                     </div>
-                                </DropdownMenuLabel>
+                                </DropdownMenuLabel> : <DropdownMenuItem onClick={() => setShowNameForm(true)}>
+                                    <div className="flex items-center gap-2">
+                                        <UserIcon className="w-5 h-5"/>
+                                        Login
+                                    </div>
+                                </DropdownMenuItem>
+                                }
+
                                 <DropdownMenuSeparator/>
+                                {user && <>
+                                    <TodoLists userId={user?.id}/>
+
+                                </>
+                                }
 
                                 <DropdownMenuItem onClick={createNew}>
                                     <div className="flex items-center gap-2">
