@@ -4,7 +4,7 @@ This app implements following features:
 - Persistence layer integration
 - Task completion and removal
 - Multiple todo list creation
-- Todo list creation via unique url
+- Todo list access via unique url
 - Displaying and switching between all owner's task list 
 - Subtasks and subtask completion progress
 - Multiple user simultaneous task editing
@@ -20,8 +20,8 @@ This app implements following features:
 
 ## Stack
 - Typescript
-- React
-- Next.js for FE and for BE endpoints  
+- React / Next.js
+- Node / Next.js
 - Tailwind and Shadcn for UI component
 - Lucide icons
 - Axios for data fetching
