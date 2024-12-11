@@ -15,7 +15,7 @@ export interface Todo {
     contributors: string[];
 }
 
-export interface TodoList {
+export interface TodoListRecord {
     id: string;
     name: string;
     todos: Todo[];
@@ -23,9 +23,18 @@ export interface TodoList {
     createdBy: string;
 }
 
+export interface TodoList {
+    id: string;
+    name: string;
+    todos: Todo[];
+    isFrozen: boolean;
+    createdBy: string;
+    contributors: Record<string, User>;
+}
+
 interface DB {
     users: User[];
-    todoLists: TodoList[];
+    todoLists: TodoListRecord[];
 }
 
 const mockDb: DB = {
@@ -77,20 +86,35 @@ const mockDb: DB = {
 // Simulated delay for async operations
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Mock async functions
-export async function fetchTodoList(id: string): Promise<TodoList | null> {
-    await delay(500);
-    return mockDb.todoLists.find(list => list.id === id) || null;
+function getContributors(todoList: TodoListRecord) {
+    function collectUserIds(todo: Todo): string[] {
+        return [...todo.contributors, ...todo.todos.reduce((contributors, todo) => [...contributors, ...collectUserIds(todo)], [] as string[])];
+    }
+
+    const uniqIds = [...new Set([todoList.createdBy, ...todoList.todos.map(collectUserIds)])];
+
+    return uniqIds.map((userId) => mockDb.users.find(user => user.id === userId) || null).filter(Boolean).reduce((contributors, contributor) => {
+        return {
+            ...contributors,
+            [contributor!.id]: contributor!
+        }
+    }, {})
 }
 
-export async function fetchUser(id: string): Promise<User | null> {
-    await delay(200);
-    return mockDb.users.find(user => user.id === id) || null;
+
+// Mock async functions
+export async function fetchTodoList(id: string): Promise<TodoList> {
+    await delay(500);
+    const todoList = mockDb.todoLists.find(list => list.id === id);
+
+    if (!todoList) throw new Error('TodoList not found');
+
+    return {...todoList, contributors: getContributors(todoList)};
 }
 
 export async function createTodoList(name: string, createdBy: string): Promise<TodoList> {
     await delay(500);
-    const newList: TodoList = {
+    const newList: TodoListRecord = {
         id: uuidv4(),
         name,
         todos: [],
@@ -98,7 +122,11 @@ export async function createTodoList(name: string, createdBy: string): Promise<T
         createdBy,
     };
     mockDb.todoLists.push(newList);
-    return newList;
+
+    return {
+        ...newList,
+        contributors: getContributors(newList)
+    };
 }
 
 export async function updateTodoList(list: TodoList): Promise<TodoList> {
@@ -106,12 +134,15 @@ export async function updateTodoList(list: TodoList): Promise<TodoList> {
     const index = mockDb.todoLists.findIndex(l => l.id === list.id);
     if (index !== -1) {
         mockDb.todoLists[index] = list;
-        return list;
+        return {
+            ...list,
+            contributors: getContributors(list)
+        };
     }
     throw new Error('TodoList not found');
 }
 
-export async function findOrCreateUser(name: string): Promise<User> {
+export async function getOrCreateUser(name: string): Promise<User> {
     await delay(500);
     let user = mockDb.users.find(u => u.name === name);
     if (!user) {
@@ -137,6 +168,11 @@ export async function getUserTodoLists(userId: string): Promise<TodoList[]> {
         return task.contributors.indexOf(userId) !== -1 || task.todos.some(isContributor);
     }
 
-    return mockDb.todoLists.filter(list => list.createdBy === userId || list.todos.some(isContributor));
+    return mockDb.todoLists.filter(list => list.createdBy === userId || list.todos.some(isContributor)).map((todoList)=>{
+        return {
+            ...todoList,
+            contributors: getContributors(todoList)
+        };
+    });
 }
 

@@ -1,9 +1,8 @@
 import {useCurrentUser} from "@/app/CurrentUserProvider";
-import {createTodoList, Todo, TodoList, updateTodoList as apiUpdateTodoList} from "./mockDb";
+import {createTodoList, Todo, TodoList, updateTodoList as apiUpdateTodoList} from "./mockBackend";
 import {v4 as uuidv4} from "uuid";
 import {mutate} from "swr";
-import {todoListUri} from "@/app/api/useTodoList";
-import {todoListsByUserUri} from "@/app/api/useTodoListsByUser";
+import {todoListsByUserUri, todoListUri} from "@/app/api/api";
 
 export function useApi() {
     const [user] = useCurrentUser();
@@ -21,6 +20,7 @@ export function useApi() {
     }
 
     async function updateTodoList(todoList: TodoList) {
+        if (!user) throw "User not provided";
         mutate(todoListUri(todoList.id), todoList, {revalidate: false});
         const resultingTodoList = await apiUpdateTodoList(todoList);
         mutate(todoListUri(todoList.id), resultingTodoList, {revalidate: false});
@@ -36,15 +36,17 @@ export function useApi() {
             return newTodoList;
         },
         updateTodoList,
-        createTodo(todoList: TodoList, text: string, parentId: string | null = null, author: string) {
+        createTodo(todoList: TodoList, text: string, parentId: string | null = null) {
+            if (!user) throw "User not provided";
+
             const newTodo: Todo = {
                 id: uuidv4(),
                 text,
                 completed: false,
                 todos: [],
-                createdBy: author,
-                updatedBy: author,
-                contributors: [author]
+                createdBy: user.id,
+                updatedBy: user.id,
+                contributors: [user.id]
             }
             if (parentId === null) {
                 return updateTodoList({

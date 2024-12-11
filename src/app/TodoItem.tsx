@@ -5,7 +5,7 @@ import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
 import {ChevronDown, ChevronRight, Trash2} from 'lucide-react'
 import {AddTodoForm} from './AddTodoForm'
-import {Todo} from "@/app/api/mockDb";
+import {Todo} from "@/app/api/mockBackend";
 
 interface TodoItemProps {
     todo: Todo

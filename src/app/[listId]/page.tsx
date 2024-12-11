@@ -10,7 +10,7 @@ import {useCurrentUser} from "@/app/CurrentUserProvider";
 import {NameFormContent} from "@/app/NameForm";
 
 import {Dialog, DialogContent,} from "@/components/ui/dialog"
-import {createTodoList, Todo, TodoList} from "@/app/api/mockDb";
+import {createTodoList, Todo, TodoList} from "@/app/api/mockBackend";
 import {mutate} from "swr";
 import {useParams, useRouter} from "next/navigation";
 
@@ -76,7 +76,7 @@ export default function TodoApp() {
         })
     }
 
-    const handleAddTodo = (text: string, parentId: string | null = null) => todoList && user && createTodo(todoList, text, parentId, user.id)
+    const handleAddTodo = (text: string, parentId: string | null = null) => todoList && createTodo(todoList, text, parentId)
 
 
     const updateListName = (newName: string) => {

@@ -1,9 +1,5 @@
 import useSWR from "swr";
-import {getTodoList} from "@/app/api/api";
-
-export function todoListUri(id: string) {
-    return `todos/${id}`
-}
+import {getTodoList, todoListUri} from "@/app/api/api";
 
 export function useTodoList(id: string) {
     return useSWR(todoListUri(id), (async () => {

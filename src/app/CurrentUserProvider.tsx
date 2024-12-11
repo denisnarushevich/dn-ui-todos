@@ -1,7 +1,7 @@
 'use client'
 
 import React, {createContext, ReactNode, useCallback, useContext, useState} from 'react';
-import {findOrCreateUser, User} from "@/app/api/mockDb";
+import {getOrCreateUser, User} from "@/app/api/mockBackend";
 
 
 type UseCurrentUserReturn = [
@@ -17,7 +17,7 @@ export function CurrentUserProvider({children}: { children: ReactNode }) {
     const [userData, setUserData] = useState<User>();
 
     const loginByName = useCallback(async (name: string): Promise<User> => {
-        const user = await findOrCreateUser(name);
+        const user = await getOrCreateUser(name);
         setUserData(user);
         return user;
     }, []);
