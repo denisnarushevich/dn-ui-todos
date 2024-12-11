@@ -1,8 +1,8 @@
 import {useTodoListsByUser} from "@/lib/react/api/useTodoListsByUser";
 import {TodoList} from "@/lib/api/api";
-import {DropdownMenuItem, DropdownMenuSeparator} from "@/components/ui/dropdown-menu";
+import {DropdownMenuItem, DropdownMenuSeparator} from "@/lib/react/components/ui/dropdown-menu";
 import {useRouter} from "next/navigation";
-import {Spinner} from "@/components/Spinner";
+import {Spinner} from "@/lib/react/components/Spinner";
 
 export function TodoLists({userId}: { userId: string }) {
     const {data, isLoading} = useTodoListsByUser(userId);

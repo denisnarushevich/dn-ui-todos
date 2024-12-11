@@ -1,4 +1,4 @@
-import {useCurrentUser} from "@/components/CurrentUserProvider";
+import {useCurrentUser} from "@/lib/react/components/CurrentUserProvider";
 import {createTodoList, Todo, TodoList, updateTodoList as apiUpdateTodoList} from "../../api/api";
 import {v4 as uuidv4} from "uuid";
 import {mutate} from "swr"

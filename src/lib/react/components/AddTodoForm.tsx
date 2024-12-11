@@ -1,8 +1,8 @@
 'use client'
 
 import {useState} from 'react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
+import {Button} from '@/lib/react/components/ui/button'
+import {Input} from '@/lib/react/components/ui/input'
 import {Plus} from 'lucide-react'
 
 interface AddTodoFormProps {

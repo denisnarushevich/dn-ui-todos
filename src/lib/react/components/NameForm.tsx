@@ -1,6 +1,6 @@
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {Spinner} from "@/components/Spinner";
+import {Input} from "@/lib/react/components/ui/input";
+import {Button} from "@/lib/react/components/ui/button";
+import {Spinner} from "@/lib/react/components/Spinner";
 import {useState} from "react";
 import {useAsyncFn} from "react-use";
 

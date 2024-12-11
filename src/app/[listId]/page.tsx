@@ -1,20 +1,20 @@
 'use client'
 
 import {useCallback, useState} from 'react'
-import {TodoItem} from '@/components/TodoItem'
-import {AddTodoForm} from '@/components/AddTodoForm'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
+import {TodoItem} from '@/lib/react/components/TodoItem'
+import {AddTodoForm} from '@/lib/react/components/AddTodoForm'
+import {Button} from '@/lib/react/components/ui/button'
+import {Input} from '@/lib/react/components/ui/input'
 import {ListChecksIcon, LockIcon, LogOutIcon, PlusIcon, UnlockIcon, UserIcon} from 'lucide-react'
-import {useCurrentUser} from "@/components/CurrentUserProvider";
-import {NameFormContent} from "@/components/NameForm";
+import {useCurrentUser} from "@/lib/react/components/CurrentUserProvider";
+import {NameFormContent} from "@/lib/react/components/NameForm";
 
-import {Dialog, DialogContent,} from "@/components/ui/dialog"
+import {Dialog, DialogContent,} from "@/lib/react/components/ui/dialog"
 import {createTodoList, Todo, TodoList} from "@/lib/api/api";
 import {mutate} from "swr";
 import {useParams, useRouter} from "next/navigation";
 
-import {Spinner} from "@/components/Spinner";
+import {Spinner} from "@/lib/react/components/Spinner";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,12 +22,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
+} from "@/lib/react/components/ui/dropdown-menu";
 import {useAsyncFn} from "react-use";
 import {useApi} from "@/lib/react/api/useApi";
 import {useTodoList} from "@/lib/react/api/useTodoList";
-import {TodoLists} from "@/components/TodoLists";
-import {Contributor} from "@/components/Contributor";
+import {TodoLists} from "@/lib/react/components/TodoLists";
+import {Contributor} from "@/lib/react/components/Contributor";
 
 export default function TodoApp() {
     const {push: navigate} = useRouter()
