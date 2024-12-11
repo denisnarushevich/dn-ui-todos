@@ -61,7 +61,6 @@ export async function createTodoList(name: string, createdBy: string): Promise<T
 
 export async function updateTodoList(list: TodoList): Promise<TodoList> {
     const {data: response} = await axios.put(`/api/${list.id}`, list);
-    console.log(response);
     return response as TodoList;
 }
 

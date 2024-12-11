@@ -36,7 +36,6 @@ This app implements following features:
 
 ## Known issues
 - Task collaboration indication doesnt properly propagate from subtasks
-- Task list renaming is janky (needs debounce)
 
 ## Things to improve
 - add debounce to updating data
