@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import {getProfile, profileUri} from "@/lib/api/api";
+import {getProfile, profileUri} from "@/lib/react/api/api";
 
 
 export function useProfile(id: string) {

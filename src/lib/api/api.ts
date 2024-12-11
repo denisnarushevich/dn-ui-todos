@@ -1,39 +1,87 @@
-import {fetchTodoList, getUser, getUserTodoLists} from "@/lib/api/mockBackend";
-import {mutate} from "swr";
+import axios from "axios";
 
-export function todoListUri(id: string) {
-    return `todos/${id}`
+export interface User {
+    id: string;
+    name: string;
 }
 
-export function todoListsByUserUri(userId: string) {
-    return `${userId}/todos`
+export interface Todo {
+    id: string;
+    text: string;
+    completed: boolean;
+    todos: Todo[];
+    createdBy: string;
+    updatedBy: string;
+    contributors: string[];
 }
 
-export function profileUri(id: string) {
-    return `profile/${id}`
+export interface TodoListRecord {
+    id: string;
+    name: string;
+    todos: Todo[];
+    isFrozen: boolean;
+    createdBy: string;
 }
 
-export async function getTodoListsByUser(userId: string) {
-    const todoLists = await getUserTodoLists(userId);
-    todoLists.forEach((todoList) => Object.values(todoList.contributors).forEach((user) => {
-        mutate(profileUri(user.id), user, {
-            revalidate: false
-        })
-    }));
-    return todoLists;
+export interface TodoList {
+    id: string;
+    name: string;
+    todos: Todo[];
+    isFrozen: boolean;
+    createdBy: string;
+    contributors: Record<string, User>;
 }
 
-export async function getTodoList(id: string) {
-    const todoList = await fetchTodoList(id);
-    Object.values(todoList.contributors).forEach((user) => {
-        mutate(profileUri(user.id), user, {
-            revalidate: false
-        })
+export interface ApiData {
+    users: User[];
+    todoLists: TodoListRecord[];
+}
+
+export function getContributors(data: ApiData, todoList: TodoListRecord) {
+    function collectUserIds(todo: Todo): string[] {
+        return [...todo.contributors, ...todo.todos.reduce((contributors, todo) => [...contributors, ...collectUserIds(todo)], [] as string[])];
+    }
+
+    const uniqIds = [...new Set([todoList.createdBy, ...todoList.todos.map(collectUserIds)])];
+
+    return uniqIds.map((userId) => data.users.find(user => user.id === userId) || null).filter(Boolean).reduce((contributors, contributor) => {
+        return {
+            ...contributors,
+            [contributor!.id]: contributor!
+        }
+    }, {})
+}
+
+export async function createTodoList(name: string, createdBy: string): Promise<TodoList> {
+    const {data: response} = await axios.post(`/api`, {
+        name, createdBy
     });
-    return todoList;
+    return response as TodoList;
 }
 
-export function getProfile(userId: string) {
-    return getUser(userId);
+export async function updateTodoList(list: TodoList): Promise<TodoList> {
+    const {data: response} = await axios.put(`/api/${list.id}`, list);
+    console.log(response);
+    return response as TodoList;
+}
+
+export async function getOrCreateUser(name: string): Promise<User> {
+    const {data: response} = await axios.post("/api/user", {name});
+    return response as User;
+}
+
+export async function fetchTodoList(id: string): Promise<TodoList> {
+    const {data: response} = await axios.get(`/api/${id}`);
+    return response as TodoList;
+}
+
+export async function getUser(userId: string): Promise<User> {
+    const {data: response} = await axios.get(`/api/user/${userId}`);
+    return response as User;
+}
+
+export async function getUserTodoLists(userId: string): Promise<TodoList[]> {
+    const {data: response} = await axios.get(`/api/user/${userId}/todos`);
+    return response as TodoList[];
 }
 

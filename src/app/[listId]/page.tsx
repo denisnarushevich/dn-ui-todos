@@ -1,8 +1,8 @@
 'use client'
 
 import {useCallback, useState} from 'react'
-import {TodoItem} from '../../components/TodoItem'
-import {AddTodoForm} from '../../components/AddTodoForm'
+import {TodoItem} from '@/components/TodoItem'
+import {AddTodoForm} from '@/components/AddTodoForm'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {ListChecksIcon, LockIcon, LogOutIcon, PlusIcon, UnlockIcon, UserIcon} from 'lucide-react'
@@ -10,7 +10,7 @@ import {useCurrentUser} from "@/components/CurrentUserProvider";
 import {NameFormContent} from "@/components/NameForm";
 
 import {Dialog, DialogContent,} from "@/components/ui/dialog"
-import {createTodoList, Todo, TodoList} from "@/lib/api/mockBackend";
+import {createTodoList, Todo, TodoList} from "@/lib/api/api";
 import {mutate} from "swr";
 import {useParams, useRouter} from "next/navigation";
 
@@ -24,8 +24,8 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {useAsyncFn} from "react-use";
-import {useApi} from "@/lib/api/useApi";
-import {useTodoList} from "@/lib/api/useTodoList";
+import {useApi} from "@/lib/react/api/useApi";
+import {useTodoList} from "@/lib/react/api/useTodoList";
 import {TodoLists} from "@/components/TodoLists";
 import {Contributor} from "@/components/Contributor";
 

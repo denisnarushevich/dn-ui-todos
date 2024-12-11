@@ -1,5 +1,5 @@
-import {useProfile} from "@/lib/api/useProfile";
-import {User} from "@/lib/api/mockBackend";
+import {useProfile} from "@/lib/react/api/useProfile";
+import {User} from "@/lib/api/api";
 import {cn} from "@/lib/utils";
 
 

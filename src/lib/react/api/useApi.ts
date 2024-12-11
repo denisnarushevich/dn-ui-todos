@@ -1,8 +1,8 @@
 import {useCurrentUser} from "@/components/CurrentUserProvider";
-import {createTodoList, Todo, TodoList, updateTodoList as apiUpdateTodoList} from "./mockBackend";
+import {createTodoList, Todo, TodoList, updateTodoList as apiUpdateTodoList} from "../../api/api";
 import {v4 as uuidv4} from "uuid";
-import {mutate} from "swr";
-import {todoListsByUserUri, todoListUri} from "@/lib/api/api";
+import {mutate} from "swr"
+import {todoListsByUserUri, todoListUri} from "@/lib/react/api/api";
 
 export function useApi() {
     const [user] = useCurrentUser();

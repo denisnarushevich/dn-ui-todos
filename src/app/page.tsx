@@ -6,8 +6,8 @@ import {useCallback, useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {NameForm} from "@/components/NameForm";
 import {Spinner} from "@/components/Spinner";
-import {useApi} from "@/lib/api/useApi";
-import {getTodoListsByUser} from "@/lib/api/api";
+import {useApi} from "@/lib/react/api/useApi";
+import {getTodoListsByUser} from "@/lib/react/api/api";
 
 export default function Home() {
     const [user, loginByName] = useCurrentUser();
