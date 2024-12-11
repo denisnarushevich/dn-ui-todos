@@ -10,7 +10,7 @@ export function useTodoList(id: string) {
                 throw "list not found";
             }
         }), {
-            refreshInterval: 1000
+            refreshInterval: 2000
         }
     )
 }
