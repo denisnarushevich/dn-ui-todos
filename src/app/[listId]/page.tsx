@@ -10,51 +10,45 @@ import {useCurrentUser} from "@/app/CurrentUserProvider";
 import {NameFormContent} from "@/app/NameForm";
 
 import {Dialog, DialogContent,} from "@/components/ui/dialog"
-import {createTodoList, fetchTodoList, Todo, TodoList, updateTodoList} from "@/app/mockDb";
-import useSWR, {Fetcher, mutate} from "swr";
+import {createTodoList, Todo, TodoList} from "@/app/api/mockDb";
+import {mutate} from "swr";
 import {useParams, useRouter} from "next/navigation";
 
-import {v4 as uuidv4} from 'uuid';
 import {Spinner} from "@/app/Spinner";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel, DropdownMenuSeparator,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {useAsyncFn} from "react-use";
+import {useApi} from "@/app/api/useApi";
+import {useTodoList} from "@/app/api/useTodoList";
 
 export default function TodoApp() {
-    const router = useRouter()
+    const {push: navigate} = useRouter()
+    const {updateTodoList, updateTodo, createTodo, deleteTodo} = useApi()
     const {listId} = useParams<{ listId: string }>();
 
-    const {data, error, mutate: mutateList} = useSWR(`todos/${listId}`, (async () => {
-            const list = await fetchTodoList(listId);
-            if (list) {
-                return list;
-            } else {
-                throw "list not found";
-            }
-        }) as Fetcher<TodoList, string>
-    )
+    const {data, error, mutate: mutateList} = useTodoList(listId);
     const todoList = data as TodoList | undefined;
 
     const [user, loginByName] = useCurrentUser();
 
     const [showNameForm, setShowNameForm] = useState(false);
+
     const handleEditClick = useCallback(() => {
         setShowNameForm(true);
-    }, [])
+    }, []);
+
     const handleNameFormSubmit = useCallback(async ({name}: { name: string }) => {
         await loginByName(name);
         setShowNameForm(false);
     }, [loginByName]);
 
-    const [{loading: saving}, update] = useAsyncFn(async (list: TodoList) => {
-        mutateList(list, {revalidate: false});
-        return updateTodoList(list);
-    })
+    const [{loading: saving}, update] = useAsyncFn(updateTodoList, [updateTodoList])
 
     if (!todoList) {
         if (error) {
@@ -64,72 +58,26 @@ export default function TodoApp() {
         }
     }
 
-    const addTodo = (text: string, parentId: string | null = null, author: string) => {
-        const newTodo: Todo = {
-            id: uuidv4(),
-            text,
-            completed: false,
-            todos: [],
-            createdBy: author,
-            updatedBy: author,
-            contributors: [author]
-        }
-        if (parentId === null) {
-            update({
-                ...todoList,
-                todos: [...todoList.todos, newTodo]
-            })
-        } else {
-            update({
-                ...todoList,
-                todos: updateTodos(todoList.todos, parentId, (todo) => ({
-                    ...todo,
-                    todos: [...todo.todos, newTodo]
-                }))
-            })
-        }
-        mutateList()
-    }
-
-    const toggleTodo = (id: string) => {
-        update({
-            ...todoList,
-            todos: updateTodos(todoList.todos, id, (todo) => ({
-                ...todo,
-                completed: !todo.completed
-            }))
+    const handleToggleTodo = (todo: Todo) => {
+        updateTodo(todoList, {
+            ...todo,
+            completed: !todo.completed
         })
     }
 
-    const deleteTodo = (id: string) => {
-        const deleteFromTasks = (tasks: Todo[]): Todo[] =>
-            tasks.filter(task => task.id !== id)
-                .map(task => ({...task, tasks: deleteFromTasks(task.todos)}))
-
-        update({
-            ...todoList,
-            todos: deleteFromTasks(todoList.todos)
-        })
+    const handleDeleteTodo = (todo: Todo) => {
+        deleteTodo(todoList, todo.id);
     }
 
-    const updateTodos = (todos: Todo[], id: string, updateFn: (todo: Todo) => Todo): Todo[] => {
-        return todos.map(todo => {
-            if (todo.id === id) {
-                return updateFn(todo)
-            }
-            if (todo.todos.length > 0) {
-                return {...todo, todos: updateTodos(todo.todos, id, updateFn)}
-            }
-            return todo
-        })
-    }
-
-    const toggleFreeze = () => {
+    const handleToggleFreeze = () => {
         update({
             ...todoList,
             isFrozen: !todoList.isFrozen
         })
     }
+
+    const handleAddTodo = (text: string, parentId: string | null = null) => todoList && user && createTodo(todoList, text, parentId, user.id)
+
 
     const updateListName = (newName: string) => {
         update({
@@ -143,7 +91,7 @@ export default function TodoApp() {
         if (user) {
             const newList = await createTodoList("New Todos", user.id);
             await mutate(`todos/${newList.id}`, newList);
-            router.push(`/${newList.id}`);
+            navigate(`/${newList.id}`);
         } else {
             setShowNameForm(true);
         }
@@ -186,7 +134,7 @@ export default function TodoApp() {
                             disabled={todoList.isFrozen}
                         /> : <div className="px-2.5 text-lg font-bold bg-transparent border-none">{todoList.name}</div>}
                     </div>
-                    {user && todoList.createdBy === user.id && <Button onClick={toggleFreeze} variant="outline">
+                    {user && todoList.createdBy === user.id && <Button onClick={handleToggleFreeze} variant="outline">
                         {todoList.isFrozen ? <UnlockIcon className="mr-2"/> : <LockIcon className="mr-2"/>}
                         {todoList.isFrozen ? 'Unreeze' : 'Freeze'}
                     </Button>}
@@ -201,7 +149,7 @@ export default function TodoApp() {
 
 
                         </div>
-                        <AddTodoForm onAdd={(text) => addTodo(text, null, 'Current User')}
+                        <AddTodoForm onAdd={(text) => handleAddTodo(text)}
                                      disabled={todoList.isFrozen}/>
 
                         <ul
@@ -211,9 +159,9 @@ export default function TodoApp() {
                                 <TodoItem
                                     key={todo.id}
                                     todo={todo}
-                                    onToggle={toggleTodo}
-                                    onDelete={deleteTodo}
-                                    onAddTask={(text, parentId) => addTodo(text, parentId, 'Current User')}
+                                    onToggle={handleToggleTodo}
+                                    onDelete={handleDeleteTodo}
+                                    onAddTask={handleAddTodo}
                                     level={0}
                                     index={index}
                                     isFrozen={todoList?.isFrozen ?? true}

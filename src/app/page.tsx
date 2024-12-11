@@ -3,26 +3,26 @@
 import {ListChecksIcon} from "lucide-react";
 import {useCurrentUser} from "@/app/CurrentUserProvider";
 import {useCallback, useEffect} from "react";
-import {createTodoList, getUserTodoLists} from "@/app/mockDb";
 import {useRouter} from "next/navigation";
 import {NameForm} from "@/app/NameForm";
 import {Spinner} from "@/app/Spinner";
 import {Button} from "@/components/ui/button";
-import {mutate} from "swr";
+import {useApi} from "@/app/api/useApi";
+import {getTodoListsByUser} from "@/app/api/api";
 
 export default function Home() {
     const [user, loginByName] = useCurrentUser();
-    const router = useRouter()
+    const {push: navigate} = useRouter()
+    const {createTodoList} = useApi()
 
     const init = useCallback(async (userId: string) => {
-        const lists = await getUserTodoLists(userId);
+        const lists = await getTodoListsByUser(userId);
         let list = lists[0]
         if (!list) {
-            list = await createTodoList("Todos", userId);
-            mutate(`todos/${list.id}`, list);
+            list = await createTodoList("New Todos");
         }
-        router.push(`/${list.id}`);
-    }, [router]);
+        navigate(`/${list.id}`);
+    }, [createTodoList, navigate]);
 
 
     useEffect(() => {

@@ -5,12 +5,12 @@ import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
 import {ChevronDown, ChevronRight, Trash2} from 'lucide-react'
 import {AddTodoForm} from './AddTodoForm'
-import {Todo} from "@/app/mockDb";
+import {Todo} from "@/app/api/mockDb";
 
 interface TodoItemProps {
     todo: Todo
-    onToggle: (id: string) => void
-    onDelete: (id: string) => void
+    onToggle: (todo: Todo) => void
+    onDelete: (todo: Todo) => void
     onAddTask: (text: string, parentId: string) => void
     level?: number
     index: number
@@ -43,7 +43,7 @@ export function TodoItem({
     const allSubtasksCompleted = totalSubtasks > 0 && completedSubtasks === totalSubtasks
 
     return (
-        <li
+        <div
             className={`${getBgColor(level ?? 0)} p-4 rounded-lg mb-2`}
         >
             <div className="flex items-center space-x-2">
@@ -59,7 +59,7 @@ export function TodoItem({
                 )}
                 <Checkbox
                     checked={todo.completed}
-                    onCheckedChange={() => onToggle(todo.id)}
+                    onCheckedChange={() => onToggle(todo)}
                     id={`todo-${todo.id}`}
                     disabled={isFrozen}
                 />
@@ -81,7 +81,7 @@ export function TodoItem({
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onDelete(todo.id)}
+                        onClick={() => onDelete(todo)}
                         className="mt-2 text-red-500 hover:text-red-700"
                         disabled={isFrozen}
                     >
@@ -113,7 +113,7 @@ export function TodoItem({
                     <AddTodoForm onAdd={(text) => onAddTask(text, todo.id)} disabled={isFrozen}/>
                 </div>
             )}
-        </li>
+        </div>
 
     )
 }
