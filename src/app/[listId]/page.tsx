@@ -4,7 +4,7 @@ import {useCallback, useState} from 'react'
 import {TodoItem} from '@/lib/react/components/TodoItem'
 import {AddTodoForm} from '@/lib/react/components/AddTodoForm'
 import {Button} from '@/lib/react/components/ui/button'
-import {Input} from '@/lib/react/components/ui/input'
+import {Title} from "@/lib/react/components/Title";
 import {ListChecksIcon, LockIcon, LogOutIcon, PlusIcon, UnlockIcon, UserIcon} from 'lucide-react'
 import {useCurrentUser} from "@/lib/react/components/CurrentUserProvider";
 import {NameFormContent} from "@/lib/react/components/NameForm";
@@ -146,9 +146,9 @@ export default function TodoApp() {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        {user && todoList.createdBy === user.id ? <Input
+                        {user && todoList.createdBy === user.id ? <Title
                             value={todoList.name}
-                            onChange={(e) => updateListName(e.target.value)}
+                            onChange={updateListName}
                             className="text-lg font-bold bg-transparent border-none"
                             disabled={todoList.isFrozen}
                         /> : <div className="px-2.5 text-lg font-bold bg-transparent border-none">{todoList.name}</div>}
