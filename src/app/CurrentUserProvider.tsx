@@ -1,7 +1,7 @@
 'use client'
 
 import React, {createContext, ReactNode, useCallback, useContext, useState} from 'react';
-import {getOrCreateUser, User} from "@/app/api/mockBackend";
+import {getOrCreateUser, User} from "@/lib/api/mockBackend";
 
 
 type UseCurrentUserReturn = [

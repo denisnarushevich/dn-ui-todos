@@ -1,4 +1,4 @@
-import {fetchTodoList, getUser, getUserTodoLists} from "@/app/api/mockBackend";
+import {fetchTodoList, getUser, getUserTodoLists} from "@/lib/api/mockBackend";
 import {mutate} from "swr";
 
 export function todoListUri(id: string) {

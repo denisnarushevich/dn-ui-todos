@@ -4,10 +4,11 @@ import {useState} from 'react'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
 import {ChevronUp, Trash2} from 'lucide-react'
-import {AddTodoForm} from './AddTodoForm'
-import {Todo, User} from "@/app/api/mockBackend";
-import {useProfile} from "@/app/api/useProfile";
+import {AddTodoForm} from '../lib/react/components/AddTodoForm'
+import {Todo, User} from "@/lib/api/mockBackend";
+import {useProfile} from "@/lib/api/useProfile";
 import {Contributor} from "@/lib/react/components/Contributor";
+import {useCurrentUser} from "@/app/CurrentUserProvider";
 
 interface TodoItemProps {
     todo: Todo
@@ -28,10 +29,10 @@ export function TodoItem({
                              isFrozen
                          }: TodoItemProps) {
     const [isExpanded, setIsExpanded] = useState(false)
-
+    const [user] = useCurrentUser();
     const {data} = useProfile(todo.createdBy);
     const createdByProfile = data as User | undefined;
-    console.log(createdByProfile);
+
     const getBgColor = (level: number) => {
         const colors = [
             'bg-gray-100',
@@ -108,7 +109,7 @@ export function TodoItem({
                     <div
                         className="mt-1"
                     >
-                        <AddTodoForm onAdd={(text) => onAddTask(text, todo.id)} disabled={isFrozen}/>
+                        <AddTodoForm onAdd={(text) => onAddTask(text, todo.id)} disabled={isFrozen || !user}/>
                         <div className="mt-2">
                             {todo.todos.map((task, taskIndex) => (
                                 <TodoItem

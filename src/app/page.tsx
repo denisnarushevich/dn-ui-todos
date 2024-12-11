@@ -7,8 +7,8 @@ import {useRouter} from "next/navigation";
 import {NameForm} from "@/app/NameForm";
 import {Spinner} from "@/app/Spinner";
 import {Button} from "@/components/ui/button";
-import {useApi} from "@/app/api/useApi";
-import {getTodoListsByUser} from "@/app/api/api";
+import {useApi} from "@/lib/api/useApi";
+import {getTodoListsByUser} from "@/lib/api/api";
 
 export default function Home() {
     const [user, loginByName] = useCurrentUser();

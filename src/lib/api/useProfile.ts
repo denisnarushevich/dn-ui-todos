@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import {getProfile, profileUri} from "@/app/api/api";
+import {getProfile, profileUri} from "@/lib/api/api";
 
 
 export function useProfile(id: string) {

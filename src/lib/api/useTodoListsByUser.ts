@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import {getTodoListsByUser, todoListsByUserUri} from "@/app/api/api";
+import {getTodoListsByUser, todoListsByUserUri} from "@/lib/api/api";
 
 export function useTodoListsByUser(userId: string) {
     return useSWR(todoListsByUserUri(userId), (async () => {

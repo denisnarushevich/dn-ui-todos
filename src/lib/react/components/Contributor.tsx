@@ -1,5 +1,5 @@
-import {useProfile} from "@/app/api/useProfile";
-import {User} from "@/app/api/mockBackend";
+import {useProfile} from "@/lib/api/useProfile";
+import {User} from "@/lib/api/mockBackend";
 
 
 function stringToRandomHexColor(input: string): string {

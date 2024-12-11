@@ -2,7 +2,7 @@
 
 import {useCallback, useState} from 'react'
 import {TodoItem} from '../TodoItem'
-import {AddTodoForm} from '../AddTodoForm'
+import {AddTodoForm} from '../../lib/react/components/AddTodoForm'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {ListChecksIcon, LockIcon, PlusIcon, UnlockIcon, UserIcon} from 'lucide-react'
@@ -10,7 +10,7 @@ import {useCurrentUser} from "@/app/CurrentUserProvider";
 import {NameFormContent} from "@/app/NameForm";
 
 import {Dialog, DialogContent,} from "@/components/ui/dialog"
-import {createTodoList, Todo, TodoList} from "@/app/api/mockBackend";
+import {createTodoList, Todo, TodoList} from "@/lib/api/mockBackend";
 import {mutate} from "swr";
 import {useParams, useRouter} from "next/navigation";
 
@@ -24,8 +24,8 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {useAsyncFn} from "react-use";
-import {useApi} from "@/app/api/useApi";
-import {useTodoList} from "@/app/api/useTodoList";
+import {useApi} from "@/lib/api/useApi";
+import {useTodoList} from "@/lib/api/useTodoList";
 import {TodoLists} from "@/lib/react/components/TodoLists";
 
 export default function TodoApp() {
@@ -163,7 +163,7 @@ export default function TodoApp() {
 
                         </div>
                         <AddTodoForm onAdd={(text) => handleAddTodo(text)}
-                                     disabled={todoList.isFrozen}/>
+                                     disabled={todoList.isFrozen || !user}/>
 
                         <ul
                             className="mt-4 space-y-4"
