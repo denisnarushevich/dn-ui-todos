@@ -6,7 +6,6 @@ import {useCallback, useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {NameForm} from "@/components/NameForm";
 import {Spinner} from "@/components/Spinner";
-import {Button} from "@/components/ui/button";
 import {useApi} from "@/lib/api/useApi";
 import {getTodoListsByUser} from "@/lib/api/api";
 
@@ -35,10 +34,8 @@ export default function Home() {
         <div className="min-h-full flex flex-col">
             <div className="h-16 shadow-md flex px-4 items-center">
                 <div className="flex-grow">
-                    <Button size="icon" className="pointer-events-none">
-                        <ListChecksIcon
-                            className="w-6 h-6 flex-shrink-0"/>
-                    </Button>
+                    <ListChecksIcon
+                        className="w-6 h-6 flex-shrink-0"/>
                 </div>
             </div>
             <div className="flex-grow h-0 overflow-auto">

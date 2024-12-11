@@ -9,6 +9,8 @@ export function useTodoList(id: string) {
             } else {
                 throw "list not found";
             }
-        })
+        }), {
+            refreshInterval: 1000
+        }
     )
 }

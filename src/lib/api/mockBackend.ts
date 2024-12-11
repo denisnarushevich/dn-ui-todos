@@ -1,4 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
+import axios from "axios";
 
 export interface User {
     id: string;
@@ -32,113 +33,19 @@ export interface TodoList {
     contributors: Record<string, User>;
 }
 
-interface DB {
+interface ApiData {
     users: User[];
     todoLists: TodoListRecord[];
 }
 
-const mockDb: DB = {
-    users: [
-        {id: '1', name: 'Alice'},
-        {id: '2', name: 'Bob'},
-        {id: '3', name: 'Charlie'},
-    ],
-    todoLists: [
-        {
-            id: '1',
-            name: 'Work Tasks',
-            todos: [
-                {
-                    id: '1',
-                    text: 'Complete project proposal',
-                    completed: false,
-                    todos: [],
-                    createdBy: '1',
-                    updatedBy: '1',
-                    contributors: ['1']
-                },
-                {
-                    id: '2',
-                    text: 'Review team performance',
-                    completed: false,
-                    todos: [
-                        {
-                            id: '3',
-                            text: 'Gather feedback',
-                            completed: true,
-                            todos: [],
-                            createdBy: '1',
-                            updatedBy: '2',
-                            contributors: ['1', '2']
-                        },
-                    ],
-                    createdBy: '1',
-                    updatedBy: '1',
-                    contributors: ['1']
-                },
-            ],
-            isFrozen: false,
-            createdBy: '1',
-        },
-        {
-            id: '2',
-            name: 'Groceries',
-            todos: [
-                {
-                    id: '3',
-                    text: 'Buy eggs',
-                    completed: false,
-                    todos: [],
-                    createdBy: '1',
-                    updatedBy: '1',
-                    contributors: ['1']
-                },
-                {
-                    id: '4',
-                    text: 'Buy milk',
-                    completed: false,
-                    todos: [
-                        {
-                            id: '5',
-                            text: 'Go to market',
-                            completed: true,
-                            todos: [],
-                            createdBy: '1',
-                            updatedBy: '2',
-                            contributors: ['1','2']
-                        },
-                        {
-                            id: '6',
-                            text: 'Find local vendors',
-                            completed: true,
-                            todos: [],
-                            createdBy: '1',
-                            updatedBy: '1',
-                            contributors: ['1']
-                        },
-                    ],
-                    createdBy: '1',
-                    updatedBy: '1',
-                    contributors: ['1', '2']
-                },
-            ],
-            isFrozen: false,
-            createdBy: '1',
-        },
-    ],
-};
-
-// Simulated delay for async operations
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-function getContributors(todoList: TodoListRecord) {
+function getContributors(data: ApiData, todoList: TodoListRecord) {
     function collectUserIds(todo: Todo): string[] {
         return [...todo.contributors, ...todo.todos.reduce((contributors, todo) => [...contributors, ...collectUserIds(todo)], [] as string[])];
     }
 
     const uniqIds = [...new Set([todoList.createdBy, ...todoList.todos.map(collectUserIds)])];
 
-    return uniqIds.map((userId) => mockDb.users.find(user => user.id === userId) || null).filter(Boolean).reduce((contributors, contributor) => {
+    return uniqIds.map((userId) => data.users.find(user => user.id === userId) || null).filter(Boolean).reduce((contributors, contributor) => {
         return {
             ...contributors,
             [contributor!.id]: contributor!
@@ -149,16 +56,21 @@ function getContributors(todoList: TodoListRecord) {
 
 // Mock async functions
 export async function fetchTodoList(id: string): Promise<TodoList> {
-    await delay(500);
-    const todoList = mockDb.todoLists.find(list => list.id === id);
+    const {data: response} = await axios.get("/api");
+    const data = response.data as ApiData;
+
+    const todoList = data.todoLists.find(list => list.id === id);
 
     if (!todoList) throw new Error('TodoList not found');
 
-    return {...todoList, contributors: getContributors(todoList)};
+    return {...todoList, contributors: getContributors(data, todoList)};
 }
 
 export async function createTodoList(name: string, createdBy: string): Promise<TodoList> {
-    await delay(500);
+    const {data: response} = await axios.get("/api");
+
+    const data = response.data as ApiData;
+
     const newList: TodoListRecord = {
         id: uuidv4(),
         name,
@@ -166,40 +78,52 @@ export async function createTodoList(name: string, createdBy: string): Promise<T
         isFrozen: false,
         createdBy,
     };
-    mockDb.todoLists.push(newList);
+    data.todoLists.push(newList);
+
+    await axios.post("/api", data);
 
     return {
         ...newList,
-        contributors: getContributors(newList)
+        contributors: getContributors(data, newList)
     };
 }
 
 export async function updateTodoList(list: TodoList): Promise<TodoList> {
-    await delay(500);
-    const index = mockDb.todoLists.findIndex(l => l.id === list.id);
+    const {data: response} = await axios.get("/api");
+    const data = response.data as ApiData;
+
+    const index = data.todoLists.findIndex(l => l.id === list.id);
     if (index !== -1) {
-        mockDb.todoLists[index] = list;
+        data.todoLists[index] = list;
+
+        await axios.post("/api", data);
+
         return {
             ...list,
-            contributors: getContributors(list)
+            contributors: getContributors(data, list)
         };
     }
     throw new Error('TodoList not found');
 }
 
 export async function getOrCreateUser(name: string): Promise<User> {
-    await delay(500);
-    let user = mockDb.users.find(u => u.name === name);
+    const {data: response} = await axios.get("/api");
+    const data = response.data as ApiData;
+    let user = data.users.find(u => u.name === name);
     if (!user) {
         user = {id: uuidv4(), name};
-        mockDb.users.push(user);
+        data.users.push(user);
     }
+
+    await axios.post("/api", data);
+
     return user;
 }
 
 export async function getUser(id: string): Promise<User> {
-    await delay(500);
-    const user = mockDb.users.find(u => u.id === id);
+    const {data: response} = await axios.get("/api");
+    const data = response.data as ApiData;
+    const user = data.users.find(u => u.id === id);
     if (!user) {
         throw new Error('User not found');
     }
@@ -207,16 +131,17 @@ export async function getUser(id: string): Promise<User> {
 }
 
 export async function getUserTodoLists(userId: string): Promise<TodoList[]> {
-    await delay(500);
+    const {data: response} = await axios.get("/api");
+    const data = response.data as ApiData;
 
     function isContributor(task: Todo) {
         return task.contributors.indexOf(userId) !== -1 || task.todos.some(isContributor);
     }
 
-    return mockDb.todoLists.filter(list => list.createdBy === userId || list.todos.some(isContributor)).map((todoList)=>{
+    return data.todoLists.filter(list => list.createdBy === userId || list.todos.some(isContributor)).map((todoList) => {
         return {
             ...todoList,
-            contributors: getContributors(todoList)
+            contributors: getContributors(data, todoList)
         };
     });
 }

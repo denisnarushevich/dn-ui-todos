@@ -5,7 +5,7 @@ import {TodoItem} from '../../components/TodoItem'
 import {AddTodoForm} from '../../components/AddTodoForm'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
-import {ListChecksIcon, LockIcon, PlusIcon, UnlockIcon, UserIcon} from 'lucide-react'
+import {ListChecksIcon, LockIcon, LogOutIcon, PlusIcon, UnlockIcon, UserIcon} from 'lucide-react'
 import {useCurrentUser} from "@/components/CurrentUserProvider";
 import {NameFormContent} from "@/components/NameForm";
 
@@ -27,6 +27,7 @@ import {useAsyncFn} from "react-use";
 import {useApi} from "@/lib/api/useApi";
 import {useTodoList} from "@/lib/api/useTodoList";
 import {TodoLists} from "@/components/TodoLists";
+import {Contributor} from "@/components/Contributor";
 
 export default function TodoApp() {
     const {push: navigate} = useRouter()
@@ -36,7 +37,7 @@ export default function TodoApp() {
     const {data, error, mutate: mutateList} = useTodoList(listId);
     const todoList = data as TodoList | undefined;
 
-    const [user, loginByName] = useCurrentUser();
+    const [user, loginByName, logout] = useCurrentUser();
 
     const [showNameForm, setShowNameForm] = useState(false);
 
@@ -105,18 +106,25 @@ export default function TodoApp() {
                     <div className="flex-grow flex gap-2 items-center">
                         <DropdownMenu>
                             <DropdownMenuTrigger>
-                                <Button size="icon">
+                                <Button size="icon" variant="outline">
                                     {saving ? <Spinner className="w-6 h-6 flex-shrink-0"/> : <ListChecksIcon
                                         className="w-6 h-6 flex-shrink-0"/>}
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                                {user ? <DropdownMenuLabel>
+                                {user ? <><DropdownMenuLabel>
                                     <div className="flex items-center gap-2">
-                                        <UserIcon className="w-5 h-5"/>
+                                        <Contributor userId={user.id} small/>
                                         {user?.name}
                                     </div>
-                                </DropdownMenuLabel> : <DropdownMenuItem onClick={() => setShowNameForm(true)}>
+                                </DropdownMenuLabel>
+                                    <DropdownMenuItem onClick={logout}>
+                                        <div className="flex items-center gap-2">
+                                            <LogOutIcon className="w-5 h-5"/>
+                                            Logout
+                                        </div>
+                                    </DropdownMenuItem>
+                                </> : <DropdownMenuItem onClick={() => setShowNameForm(true)}>
                                     <div className="flex items-center gap-2">
                                         <UserIcon className="w-5 h-5"/>
                                         Login
@@ -125,11 +133,9 @@ export default function TodoApp() {
                                 }
 
                                 <DropdownMenuSeparator/>
-                                {user && <>
+                                {user !== undefined && <>
                                     <TodoLists userId={user?.id}/>
-
-                                </>
-                                }
+                                </>}
 
                                 <DropdownMenuItem onClick={createNew}>
                                     <div className="flex items-center gap-2">

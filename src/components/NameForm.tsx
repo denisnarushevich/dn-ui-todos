@@ -28,7 +28,7 @@ export function NameFormContent({onSubmit}: NameFormProps) {
                 placeholder="John Smith"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="text-2xl font-bold bg-white border-none"
+                className="text-sm font-bold bg-white border-none"
             />
 
         </div>

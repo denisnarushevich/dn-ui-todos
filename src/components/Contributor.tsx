@@ -1,5 +1,6 @@
 import {useProfile} from "@/lib/api/useProfile";
 import {User} from "@/lib/api/mockBackend";
+import {cn} from "@/lib/utils";
 
 
 function stringToRandomHexColor(input: string): string {
@@ -24,12 +25,15 @@ function stringToRandomHexColor(input: string): string {
     return hashToHexColor(hash);
 }
 
-export function Contributor({userId}: { userId: string }) {
+export function Contributor({userId, small}: { userId: string; small?: boolean }) {
     const {data} = useProfile(userId)
     const user = data as User | undefined;
     const initials = user ? (user?.name[0] + user?.name[1]).toUpperCase() : "";
 
-    return <div className="w-8 h-8 rounded-full text-center font-bold text-sm text-white leading-8" style={{
+    return <div className={cn("rounded-full text-center font-bold text-white", {
+        "w-8 h-8 text-sm leading-8": !small,
+        "w-6 h-6 text-xs leading-6": small
+    })} style={{
         backgroundColor: user ? stringToRandomHexColor(user.name) : "lightslategray"
     }}>{initials}</div>;
 }
