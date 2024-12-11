@@ -1,11 +1,11 @@
 'use client'
 
 import {ListChecksIcon} from "lucide-react";
-import {useCurrentUser} from "@/app/CurrentUserProvider";
+import {useCurrentUser} from "@/components/CurrentUserProvider";
 import {useCallback, useEffect} from "react";
 import {useRouter} from "next/navigation";
-import {NameForm} from "@/app/NameForm";
-import {Spinner} from "@/app/Spinner";
+import {NameForm} from "@/components/NameForm";
+import {Spinner} from "@/components/Spinner";
 import {Button} from "@/components/ui/button";
 import {useApi} from "@/lib/api/useApi";
 import {getTodoListsByUser} from "@/lib/api/api";

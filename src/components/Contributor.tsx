@@ -29,15 +29,7 @@ export function Contributor({userId}: { userId: string }) {
     const user = data as User | undefined;
     const initials = user ? (user?.name[0] + user?.name[1]).toUpperCase() : "";
 
-    return <div style={{
-        width: "32px",
-        height: "32px",
-        borderRadius: "100%",
-        lineHeight: "32px",
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: 12,
-        color: "white",
+    return <div className="w-8 h-8 rounded-full text-center font-bold text-sm text-white leading-8" style={{
         backgroundColor: user ? stringToRandomHexColor(user.name) : "lightslategray"
     }}>{initials}</div>;
 }

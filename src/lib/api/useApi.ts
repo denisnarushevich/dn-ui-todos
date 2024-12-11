@@ -1,4 +1,4 @@
-import {useCurrentUser} from "@/app/CurrentUserProvider";
+import {useCurrentUser} from "@/components/CurrentUserProvider";
 import {createTodoList, Todo, TodoList, updateTodoList as apiUpdateTodoList} from "./mockBackend";
 import {v4 as uuidv4} from "uuid";
 import {mutate} from "swr";

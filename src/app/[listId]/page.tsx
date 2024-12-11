@@ -1,20 +1,20 @@
 'use client'
 
 import {useCallback, useState} from 'react'
-import {TodoItem} from '../TodoItem'
-import {AddTodoForm} from '../../lib/react/components/AddTodoForm'
+import {TodoItem} from '../../components/TodoItem'
+import {AddTodoForm} from '../../components/AddTodoForm'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {ListChecksIcon, LockIcon, PlusIcon, UnlockIcon, UserIcon} from 'lucide-react'
-import {useCurrentUser} from "@/app/CurrentUserProvider";
-import {NameFormContent} from "@/app/NameForm";
+import {useCurrentUser} from "@/components/CurrentUserProvider";
+import {NameFormContent} from "@/components/NameForm";
 
 import {Dialog, DialogContent,} from "@/components/ui/dialog"
 import {createTodoList, Todo, TodoList} from "@/lib/api/mockBackend";
 import {mutate} from "swr";
 import {useParams, useRouter} from "next/navigation";
 
-import {Spinner} from "@/app/Spinner";
+import {Spinner} from "@/components/Spinner";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,7 +26,7 @@ import {
 import {useAsyncFn} from "react-use";
 import {useApi} from "@/lib/api/useApi";
 import {useTodoList} from "@/lib/api/useTodoList";
-import {TodoLists} from "@/lib/react/components/TodoLists";
+import {TodoLists} from "@/components/TodoLists";
 
 export default function TodoApp() {
     const {push: navigate} = useRouter()

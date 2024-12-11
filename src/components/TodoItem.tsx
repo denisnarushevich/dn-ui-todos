@@ -4,11 +4,11 @@ import {useState} from 'react'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Button} from '@/components/ui/button'
 import {ChevronUp, Trash2} from 'lucide-react'
-import {AddTodoForm} from '../lib/react/components/AddTodoForm'
+import {AddTodoForm} from './AddTodoForm'
 import {Todo, User} from "@/lib/api/mockBackend";
 import {useProfile} from "@/lib/api/useProfile";
-import {Contributor} from "@/lib/react/components/Contributor";
-import {useCurrentUser} from "@/app/CurrentUserProvider";
+import {Contributor} from "@/components/Contributor";
+import {useCurrentUser} from "@/components/CurrentUserProvider";
 
 interface TodoItemProps {
     todo: Todo

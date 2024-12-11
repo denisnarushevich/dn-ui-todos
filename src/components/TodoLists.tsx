@@ -2,7 +2,7 @@ import {useTodoListsByUser} from "@/lib/api/useTodoListsByUser";
 import {TodoList} from "@/lib/api/mockBackend";
 import {DropdownMenuItem, DropdownMenuSeparator} from "@/components/ui/dropdown-menu";
 import {useRouter} from "next/navigation";
-import {Spinner} from "@/app/Spinner";
+import {Spinner} from "@/components/Spinner";
 
 export function TodoLists({userId}: { userId: string }) {
     const {data, isLoading} = useTodoListsByUser(userId);
