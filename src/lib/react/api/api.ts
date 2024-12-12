@@ -1,25 +1,27 @@
-import {fetchTodoList, getUser, getUserTodoLists} from "@/lib/api/api";
-import {mutate} from "swr";
+import { fetchTodoList, getUser, getUserTodoLists } from "@/lib/api/api";
+import { mutate } from "swr";
 
 export function todoListUri(id: string) {
-    return `todos/${id}`
+    return `todos/${id}`;
 }
 
 export function todoListsByUserUri(userId: string) {
-    return `${userId}/todos`
+    return `${userId}/todos`;
 }
 
 export function profileUri(id: string) {
-    return `profile/${id}`
+    return `profile/${id}`;
 }
 
 export async function getTodoListsByUser(userId: string) {
     const todoLists = await getUserTodoLists(userId);
-    todoLists.forEach((todoList) => Object.values(todoList.contributors).forEach((user) => {
-        mutate(profileUri(user.id), user, {
-            revalidate: false
-        })
-    }));
+    todoLists.forEach((todoList) =>
+        Object.values(todoList.contributors).forEach((user) => {
+            mutate(profileUri(user.id), user, {
+                revalidate: false,
+            });
+        }),
+    );
     return todoLists;
 }
 
@@ -27,8 +29,8 @@ export async function getTodoList(id: string) {
     const todoList = await fetchTodoList(id);
     Object.values(todoList.contributors).forEach((user) => {
         mutate(profileUri(user.id), user, {
-            revalidate: false
-        })
+            revalidate: false,
+        });
     });
     return todoList;
 }
@@ -36,4 +38,3 @@ export async function getTodoList(id: string) {
 export function getProfile(userId: string) {
     return getUser(userId);
 }
-

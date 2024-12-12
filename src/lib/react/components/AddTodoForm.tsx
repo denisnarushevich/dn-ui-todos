@@ -1,25 +1,25 @@
-'use client'
+"use client";
 
-import {useState} from 'react'
-import {Button} from '@/lib/react/components/ui/button'
-import {Input} from '@/lib/react/components/ui/input'
-import {Plus} from 'lucide-react'
+import { useState } from "react";
+import { Button } from "@/lib/react/components/ui/button";
+import { Input } from "@/lib/react/components/ui/input";
+import { Plus } from "lucide-react";
 
 interface AddTodoFormProps {
-    onAdd: (text: string) => void
-    disabled?: boolean
+    onAdd: (text: string) => void;
+    disabled?: boolean;
 }
 
-export function AddTodoForm({onAdd, disabled = false}: AddTodoFormProps) {
-    const [text, setText] = useState('')
+export function AddTodoForm({ onAdd, disabled = false }: AddTodoFormProps) {
+    const [text, setText] = useState("");
 
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
         if (text.trim() && !disabled) {
-            onAdd(text.trim())
-            setText('')
+            onAdd(text.trim());
+            setText("");
         }
-    }
+    };
 
     return (
         <form onSubmit={handleSubmit} className="flex space-x-2">
@@ -32,9 +32,8 @@ export function AddTodoForm({onAdd, disabled = false}: AddTodoFormProps) {
                 disabled={disabled}
             />
             <Button type="submit" size="icon" disabled={disabled} className=" flex-shrink-0">
-                <Plus className="h-4 w-4"/>
+                <Plus className="h-4 w-4" />
             </Button>
         </form>
-    )
+    );
 }
-

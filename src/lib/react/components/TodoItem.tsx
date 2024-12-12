@@ -1,57 +1,42 @@
-'use client'
+"use client";
 
-import {useState} from 'react'
-import {Checkbox} from '@/lib/react/components/ui/checkbox'
-import {Button} from '@/lib/react/components/ui/button'
-import {ChevronUp, Trash2} from 'lucide-react'
-import {AddTodoForm} from './AddTodoForm'
-import {Todo, User} from "@/lib/api/api";
-import {useProfile} from "@/lib/react/api/useProfile";
-import {Contributor} from "@/lib/react/components/Contributor";
-import {useCurrentUser} from "@/lib/react/components/CurrentUserProvider";
+import { useState } from "react";
+import { Checkbox } from "@/lib/react/components/ui/checkbox";
+import { Button } from "@/lib/react/components/ui/button";
+import { ChevronUp, Trash2 } from "lucide-react";
+import { AddTodoForm } from "./AddTodoForm";
+import { Todo, User } from "@/lib/api/api";
+import { useProfile } from "@/lib/react/api/useProfile";
+import { Contributor } from "@/lib/react/components/Contributor";
+import { useCurrentUser } from "@/lib/react/components/CurrentUserProvider";
 
 interface TodoItemProps {
-    todo: Todo
-    onToggle: (todo: Todo) => void
-    onDelete: (todo: Todo) => void
-    onAddTask: (text: string, parentId: string) => void
-    level?: number
-    index: number
-    isFrozen: boolean
+    todo: Todo;
+    onToggle: (todo: Todo) => void;
+    onDelete: (todo: Todo) => void;
+    onAddTask: (text: string, parentId: string) => void;
+    level?: number;
+    index: number;
+    isFrozen: boolean;
 }
 
-export function TodoItem({
-                             todo,
-                             onToggle,
-                             onDelete,
-                             onAddTask,
-                             level = 0,
-                             isFrozen
-                         }: TodoItemProps) {
-    const [isExpanded, setIsExpanded] = useState(false)
+export function TodoItem({ todo, onToggle, onDelete, onAddTask, level = 0, isFrozen }: TodoItemProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
     const [user] = useCurrentUser();
-    const {data} = useProfile(todo.createdBy);
+    const { data } = useProfile(todo.createdBy);
     const createdByProfile = data as User | undefined;
 
     const getBgColor = (level: number) => {
-        const colors = [
-            'bg-gray-100',
-            'bg-gray-200',
-            'bg-gray-300',
-            'bg-gray-400',
-            'bg-gray-500',
-        ]
-        return colors[level % colors.length]
-    }
+        const colors = ["bg-gray-100", "bg-gray-200", "bg-gray-300", "bg-gray-400", "bg-gray-500"];
+        return colors[level % colors.length];
+    };
 
-    const completedSubtasks = todo.todos.filter(task => task.completed).length
-    const totalSubtasks = todo.todos.length
+    const completedSubtasks = todo.todos.filter((task) => task.completed).length;
+    const totalSubtasks = todo.todos.length;
     const allSubtasksCompleted = totalSubtasks > 0 && completedSubtasks === totalSubtasks;
 
     return (
-        <div
-            className={`${getBgColor(level ?? 0)} p-4 rounded-lg mb-2`}
-        >
+        <div className={`${getBgColor(level ?? 0)} p-4 rounded-lg mb-2`}>
             <div className="flex items-center gap-4">
                 <Checkbox
                     checked={todo.completed}
@@ -61,18 +46,21 @@ export function TodoItem({
                 />
                 <label
                     htmlFor={`todo-${todo.id}`}
-                    className={`font-bold flex-grow ${todo.completed ? 'line-through text-gray-500' : ''}`}
+                    className={`font-bold flex-grow ${todo.completed ? "line-through text-gray-500" : ""}`}
                 >
                     {todo.text}
                 </label>
                 <div className="flex flex-shrink-0 gap-2">
-                    {todo.contributors.map((userId) => <Contributor key={userId} userId={userId}/>)}
+                    {todo.contributors.map((userId) => (
+                        <Contributor key={userId} userId={userId} />
+                    ))}
                 </div>
                 {totalSubtasks > 0 && (
                     <span
-                        className={`text-sm font-bold ${allSubtasksCompleted ? 'text-green-500' : completedSubtasks ? 'text-orange-500' : 'text-gray-500'}`}>
-                {completedSubtasks}/{totalSubtasks}
-              </span>
+                        className={`text-sm font-bold ${allSubtasksCompleted ? "text-green-500" : completedSubtasks ? "text-orange-500" : "text-gray-500"}`}
+                    >
+                        {completedSubtasks}/{totalSubtasks}
+                    </span>
                 )}
                 <Button
                     variant="ghost"
@@ -80,17 +68,19 @@ export function TodoItem({
                     onClick={() => setIsExpanded(!isExpanded)}
                     aria-label={isExpanded ? "Collapse tasks" : "Expand tasks"}
                 >
-                    <ChevronUp className="h-4" style={{
-                        transform: isExpanded ? "rotate(0deg)" : "rotate(180deg)",
-                        transition: "transform 200ms ease-in"
-                    }}/>
+                    <ChevronUp
+                        className="h-4"
+                        style={{
+                            transform: isExpanded ? "rotate(0deg)" : "rotate(180deg)",
+                            transition: "transform 200ms ease-in",
+                        }}
+                    />
                 </Button>
             </div>
             {isExpanded && (
                 <div className="mt-4">
-
-                    <div className='font-bold text-sm'>Actions</div>
-                    <div className='mt-1'>
+                    <div className="font-bold text-sm">Actions</div>
+                    <div className="mt-1">
                         <Button
                             variant="outline"
                             size="icon"
@@ -98,18 +88,16 @@ export function TodoItem({
                             className="text-red-500 hover:text-red-700"
                             disabled={isFrozen}
                         >
-                            <Trash2 className="h-4 w-4 "/>
+                            <Trash2 className="h-4 w-4 " />
                         </Button>
                     </div>
 
-                    <div className=' font-bold text-sm mt-4'>Author</div>
+                    <div className=" font-bold text-sm mt-4">Author</div>
                     {createdByProfile && <div className="mt-1 text-sm text-gray-500">{createdByProfile.name}</div>}
 
-                    <div className=' font-bold text-sm mt-4'>Subtasks</div>
-                    <div
-                        className="mt-1"
-                    >
-                        <AddTodoForm onAdd={(text) => onAddTask(text, todo.id)} disabled={isFrozen || !user}/>
+                    <div className=" font-bold text-sm mt-4">Subtasks</div>
+                    <div className="mt-1">
+                        <AddTodoForm onAdd={(text) => onAddTask(text, todo.id)} disabled={isFrozen || !user} />
                         <div className="mt-2">
                             {todo.todos.map((task, taskIndex) => (
                                 <TodoItem
@@ -128,7 +116,5 @@ export function TodoItem({
                 </div>
             )}
         </div>
-
-    )
+    );
 }
-

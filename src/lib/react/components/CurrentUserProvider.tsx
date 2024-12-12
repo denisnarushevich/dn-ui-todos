@@ -1,8 +1,7 @@
-'use client'
+"use client";
 
-import React, {createContext, ReactNode, useCallback, useContext, useState} from 'react';
-import {getOrCreateUser, User} from "@/lib/api/api";
-
+import React, { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { getOrCreateUser, User } from "@/lib/api/api";
 
 type UseCurrentUserReturn = [
     userData: User | undefined,
@@ -12,8 +11,7 @@ type UseCurrentUserReturn = [
 
 const CurrentUserContext = createContext<UseCurrentUserReturn | undefined>(undefined);
 
-
-export function CurrentUserProvider({children}: { children: ReactNode }) {
+export function CurrentUserProvider({ children }: { children: ReactNode }) {
     const [userData, setUserData] = useState<User>();
 
     const loginByName = useCallback(async (name: string): Promise<User> => {
@@ -26,11 +24,8 @@ export function CurrentUserProvider({children}: { children: ReactNode }) {
         setUserData(undefined);
     }, []);
 
-
     return (
-        <CurrentUserContext.Provider value={[userData, loginByName, logout]}>
-            {children}
-        </CurrentUserContext.Provider>
+        <CurrentUserContext.Provider value={[userData, loginByName, logout]}>{children}</CurrentUserContext.Provider>
     );
 }
 
@@ -38,7 +33,7 @@ export function CurrentUserProvider({children}: { children: ReactNode }) {
 export const useCurrentUser = (): UseCurrentUserReturn => {
     const context = useContext(CurrentUserContext);
     if (!context) {
-        throw new Error('useCurrentUser must be used within a CurrentUserProvider');
+        throw new Error("useCurrentUser must be used within a CurrentUserProvider");
     }
     return context;
 };

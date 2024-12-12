@@ -1,29 +1,29 @@
-import {useCurrentUser} from "@/lib/react/components/CurrentUserProvider";
-import {createTodoList, Todo, TodoList, updateTodoList as apiUpdateTodoList} from "../../api/api";
-import {v4 as uuidv4} from "uuid";
-import {mutate} from "swr"
-import {todoListsByUserUri, todoListUri} from "@/lib/react/api/api";
+import { useCurrentUser } from "@/lib/react/components/CurrentUserProvider";
+import { createTodoList, Todo, TodoList, updateTodoList as apiUpdateTodoList } from "../../api/api";
+import { v4 as uuidv4 } from "uuid";
+import { mutate } from "swr";
+import { todoListsByUserUri, todoListUri } from "@/lib/react/api/api";
 
 export function useApi() {
     const [user] = useCurrentUser();
 
     function updateTodos(todos: Todo[], id: string, updateFn: (todo: Todo) => Todo): Todo[] {
-        return todos.map(todo => {
+        return todos.map((todo) => {
             if (todo.id === id) {
-                return updateFn(todo)
+                return updateFn(todo);
             }
             if (todo.todos.length > 0) {
-                return {...todo, todos: updateTodos(todo.todos, id, updateFn)}
+                return { ...todo, todos: updateTodos(todo.todos, id, updateFn) };
             }
-            return todo
-        })
+            return todo;
+        });
     }
 
     async function updateTodoList(todoList: TodoList) {
         if (!user) throw "User not provided";
-        mutate(todoListUri(todoList.id), todoList, {revalidate: false});
+        mutate(todoListUri(todoList.id), todoList, { revalidate: false });
         const resultingTodoList = await apiUpdateTodoList(todoList);
-        mutate(todoListUri(todoList.id), resultingTodoList, {revalidate: false});
+        mutate(todoListUri(todoList.id), resultingTodoList, { revalidate: false });
         return resultingTodoList;
     }
 
@@ -31,7 +31,7 @@ export function useApi() {
         async createTodoList(name: string) {
             if (!user) throw "User not provided";
             const newTodoList = await createTodoList(name, user.id);
-            mutate(todoListUri(newTodoList.id), newTodoList, {revalidate: false});
+            mutate(todoListUri(newTodoList.id), newTodoList, { revalidate: false });
             mutate(todoListsByUserUri(user.id));
             return newTodoList;
         },
@@ -46,21 +46,21 @@ export function useApi() {
                 todos: [],
                 createdBy: user.id,
                 updatedBy: user.id,
-                contributors: [user.id]
-            }
+                contributors: [user.id],
+            };
             if (parentId === null) {
                 return updateTodoList({
                     ...todoList,
-                    todos: [...todoList.todos, newTodo]
-                })
+                    todos: [...todoList.todos, newTodo],
+                });
             } else {
                 return updateTodoList({
                     ...todoList,
                     todos: updateTodos(todoList.todos, parentId, (todo) => ({
                         ...todo,
-                        todos: [...todo.todos, newTodo]
-                    }))
-                })
+                        todos: [...todo.todos, newTodo],
+                    })),
+                });
             }
         },
         updateTodo(todoList: TodoList, todo: Todo) {
@@ -71,19 +71,20 @@ export function useApi() {
                 todos: updateTodos(todoList.todos, todo.id, () => ({
                     ...todo,
                     updatedBy: user.id,
-                    contributors: todo.contributors.includes(user.id) ? todo.contributors : [...todo.contributors, user.id]
-                }))
-            })
+                    contributors: todo.contributors.includes(user.id)
+                        ? todo.contributors
+                        : [...todo.contributors, user.id],
+                })),
+            });
         },
         deleteTodo(todoList: TodoList, id: string) {
             const deleteFromTasks = (tasks: Todo[]): Todo[] =>
-                tasks.filter(task => task.id !== id)
-                    .map(task => ({...task, todos: deleteFromTasks(task.todos)}))
+                tasks.filter((task) => task.id !== id).map((task) => ({ ...task, todos: deleteFromTasks(task.todos) }));
 
             return updateTodoList({
                 ...todoList,
-                todos: deleteFromTasks(todoList.todos)
-            })
-        }
-    }
+                todos: deleteFromTasks(todoList.todos),
+            });
+        },
+    };
 }

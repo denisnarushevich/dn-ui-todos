@@ -1,13 +1,13 @@
-import {Redis} from '@upstash/redis';
-import {NextRequest, NextResponse} from 'next/server';
-import {ApiData, getContributors, TodoListRecord} from "@/lib/api/api";
-import {v4 as uuidv4} from "uuid";
+import { Redis } from "@upstash/redis";
+import { NextRequest, NextResponse } from "next/server";
+import { ApiData, getContributors, TodoListRecord } from "@/lib/api/api";
+import { v4 as uuidv4 } from "uuid";
 
 const redis = Redis.fromEnv();
 
 export async function POST(request: NextRequest) {
-    const data = await redis.get("data") as ApiData;
-    const {name, createdBy} = await request.json() as {
+    const data = (await redis.get("data")) as ApiData;
+    const { name, createdBy } = (await request.json()) as {
         name: string;
         createdBy: string;
     };
@@ -23,8 +23,10 @@ export async function POST(request: NextRequest) {
 
     await redis.set("data", data);
 
-    return new NextResponse(JSON.stringify({
-        ...newList,
-        contributors: getContributors(data, newList)
-    }));
+    return new NextResponse(
+        JSON.stringify({
+            ...newList,
+            contributors: getContributors(data, newList),
+        }),
+    );
 }
